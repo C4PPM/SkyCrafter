@@ -1,48 +1,134 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>SkyCrafter Search</title>
+  <title>SkyCrafter</title>
   <style>
-    body { font-family: Arial; background-color: #1b1b1b; color: #f0f0f0; padding: 20px; max-width: 600px; margin: auto; }
-    input, button { padding: 10px; font-size: 16px; margin-right: 5px; }
-    button { cursor: pointer; }
-    pre { background-color: #2b2b2b; padding: 15px; overflow: auto; margin-top: 20px; white-space: pre-wrap; }
+    body {
+      font-family: Arial, sans-serif;
+      background: #0f172a;
+      color: #e5e7eb;
+      margin: 0;
+      padding: 20px;
+    }
+    h1, h2 {
+      margin: 0 0 10px;
+    }
+    .search {
+      margin-bottom: 20px;
+    }
+    input, button {
+      padding: 10px;
+      font-size: 16px;
+    }
+    button {
+      cursor: pointer;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 15px;
+    }
+    .card {
+      background: #020617;
+      border-radius: 8px;
+      padding: 15px;
+    }
+    .label {
+      color: #94a3b8;
+      font-size: 14px;
+    }
+    .value {
+      font-size: 18px;
+      font-weight: bold;
+    }
+    ul {
+      padding-left: 18px;
+    }
   </style>
 </head>
 <body>
-  <h1>SkyCrafter Search</h1>
-  <input id="username" placeholder="Enter username" />
-  <button onclick="search()">Search</button>
-  <pre id="output">Enter a username and click Search to see results.</pre>
+
+  <h1>SkyCrafter</h1>
+
+  <div class="search">
+    <input id="username" placeholder="Enter username">
+    <button onclick="search()">Search</button>
+  </div>
+
+  <div id="content"></div>
 
   <script>
     async function search() {
-      const username = document.getElementById("username").value.trim();
-      const output = document.getElementById("output");
+      const username = document.getElementById("username").value.trim()
+      if (!username) return
 
-      if (!username) {
-        output.textContent = "Please enter a username!";
-        return;
-      }
+      const res = await fetch(
+        `https://skycrafter.finbob512.workers.dev/?username=${username}`
+      )
+      const data = await res.json()
 
-      output.textContent = "Loading...";
+      render(data)
+    }
 
-      try {
-        const res = await fetch(
-          "https://skycrafter.finbob512.workers.dev/?username=" + encodeURIComponent(username)
-        );
+    function render(data) {
+      const sb = data.stats?.skyBlock
+      const profiles = sb?.profiles ?? {}
 
-        if (!res.ok) {
-          output.textContent = "Error fetching data: " + res.status;
-          return;
-        }
+      document.getElementById("content").innerHTML = `
+        <div class="grid">
 
-        const data = await res.json();
-        output.textContent = JSON.stringify(data, null, 2);
-      } catch (err) {
-        output.textContent = "Error: " + err.message;
-      }
+          <div class="card">
+            <h2>Player</h2>
+            <div class="label">Name</div>
+            <div class="value">${data.name}</div>
+
+            <div class="label">Rank</div>
+            <div class="value">${data.selectedRank ?? "None"}</div>
+
+            <div class="label">Last Server</div>
+            <div class="value">${data.lastServer}</div>
+          </div>
+
+          <div class="card">
+            <h2>Network</h2>
+            <div class="label">Coins</div>
+            <div class="value">${data.networkCoins.toLocaleString()}</div>
+
+            <div class="label">Total Playtime</div>
+            <div class="value">${formatTime(data.totalPlaytime)}</div>
+          </div>
+
+          <div class="card">
+            <h2>Skyblock Profiles</h2>
+            <ul>
+              ${Object.values(profiles).map(p =>
+                `<li>${p.cuteName}</li>`
+              ).join("")}
+            </ul>
+          </div>
+
+          <div class="card">
+            <h2>Cosmetics</h2>
+            <div class="label">Pet</div>
+            <div class="value">${data.selectedPet ?? "None"}</div>
+
+            <div class="label">Gadget</div>
+            <div class="value">${data.selectedGadget ?? "None"}</div>
+
+            <div class="label">Particle</div>
+            <div class="value">${data.selectedParticle ?? "None"}</div>
+          </div>
+
+        </div>
+      `
+    }
+
+    function formatTime(seconds) {
+      const hours = Math.floor(seconds / 3600)
+      const days = Math.floor(hours / 24)
+      return `${days}d ${hours % 24}h`
     }
   </script>
+
 </body>
 </html>
