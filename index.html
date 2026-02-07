@@ -3,55 +3,85 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SkyCrafter - Player Stats</title>
+  <title>SkyCrafter</title>
   <link rel="stylesheet" href="style.css">
 </head>
-<body class="dark-mode">
-
+<body>
   <header>
     <h1>SkyCrafter</h1>
-    <p>CraftersMC Player Stats Tracker</p>
+    <p>CraftersMC player statistic tracker</p>
   </header>
 
-  <!-- SEARCH BAR -->
-  <section id="search-section">
-    <input type="text" id="username" placeholder="Enter Minecraft Username">
-    <button onclick="search()">Search</button>
-    <button id="view-json" style="display:none;" onclick="viewRawJson()">View RAW JSON</button>
-  </section>
+  <main>
+    <section class="search-section">
+      <input type="text" id="username-input" placeholder="Enter Minecraft username">
+      <button id="search-btn">Search</button>
+      <button id="view-json-btn">View RAW JSON</button>
+    </section>
 
-  <!-- PLAYER INFO -->
-  <section id="player-container" class="hidden">
-    <div class="player-card">
-      <img id="player-skin" src="" alt="Player Head">
-      <div class="player-info">
-        <div id="player-name" class="player-name">Username</div>
-        <div id="player-uuid" class="player-uuid">UUID</div>
-        <div id="player-rank" class="player-rank-plate">Rank</div>
-        <div id="player-pixel" class="player-pixel">Pixel ID:</div>
+    <section id="player-info" class="hidden">
+      <div class="player-head">
+        <img id="player-head-img" src="" alt="Player Head">
+      </div>
+      <div class="player-details">
+        <h2 id="player-username"></h2>
+        <p class="uuid" id="player-uuid"></p>
+        <div class="rank-section">
+          <span class="rank" id="player-rank"></span>
+          <span class="pixel-id" id="player-pixel-id"></span>
+        </div>
       </div>
       <div class="network-info">
-        <div>Network XP: <span id="network-xp">0</span></div>
-        <div>Network Coins: <span id="network-coins">0</span></div>
+        <p id="network-xp"></p>
+        <p id="network-coins"></p>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- SKYBLOCK PROFILES -->
-  <section id="skyblock-section" class="hidden">
-    <h2>SkyBlock Profiles (<span id="profiles-count">0</span> profiles)</h2>
-    <div id="profile-tabs" class="profile-tabs"></div>
-    <div id="profile-content" class="profile-content"></div>
-  </section>
+    <section id="profiles-section" class="hidden">
+      <h3>SkyBlock Profiles (<span id="profile-count">0</span> profiles)</h3>
+      <div id="profiles-buttons"></div>
+    </section>
 
-  <!-- STATS GRID -->
-  <section id="stats-section" class="hidden">
-    <div id="stats-grid" class="stats-grid"></div>
-  </section>
+    <section id="stats-section" class="hidden">
+      <div class="stats-grid">
+        <div class="stat-box">
+          <h4>⏱️ Playtime</h4>
+          <p id="playtime-total"></p>
+          <p id="playtime-skyblock"></p>
+          <p id="playtime-hub"></p>
+        </div>
+        <div class="stat-box">
+          <h4>📅 Login Info</h4>
+          <p>First Login: <span id="first-login"></span></p>
+          <p>Last Login: <span id="last-login"></span></p>
+          <p>Last Server: <span id="last-server"></span></p>
+        </div>
+        <div class="stat-box">
+          <h4>⭐ SkyBlock Level</h4>
+          <p>Level: <span id="sb-level"></span></p>
+          <p>XP: <span id="sb-xp"></span></p>
+        </div>
+        <div class="stat-box">
+          <h4>⚔️ Combat Stats</h4>
+          <p>Total Kills: <span id="combat-kills"></span></p>
+          <p>Total Deaths: <span id="combat-deaths"></span></p>
+          <p>Max Damage: <span id="combat-max-dmg"></span></p>
+          <p>Max Crit: <span id="combat-max-crit"></span></p>
+        </div>
+        <div class="stat-box">
+          <h4>👤 Account Info</h4>
+          <p>Language: <span id="account-language"></span></p>
+          <p>Chat in Hubs: <span id="account-chat"></span></p>
+          <p>Friend Requests: <span id="account-friend-requests"></span></p>
+          <p>Private Messages: <span id="account-pms"></span></p>
+        </div>
+      </div>
+    </section>
+  </main>
 
   <footer>
     <p>Powered by <a href="https://craftersmc.net" target="_blank">CraftersMC API</a></p>
-    <p><a href="#" id="my-data" onclick="searchMyData()">C4PPM</a></p>
+    <p>Made by C4PPM</p>
   </footer>
 
   <script src="script.js"></script>
