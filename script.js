@@ -34,7 +34,6 @@ async function search() {
 
     renderPlayer(data);
     renderProfiles(data);
-    renderStats(data);
 
   } catch (e) {
     console.error(e);
@@ -114,14 +113,29 @@ async function loadProfile(profileId) {
     if (!res.ok) throw new Error("Failed to fetch profile");
     const profileData = await res.json();
 
+    const memberData = Object.values(profileData.members || {})[0] || {};
+
     container.innerHTML = `
-      <div>Total Playtime: ${formatTime(profileData.totalPlaytime || 0)}</div>
-      <div>SkyBlock Playtime: ${formatTime(profileData.playtimePerGame?.SKYBLOCK || 0)}</div>
-      <div>Hub Playtime: ${formatTime(profileData.playtimePerGame?.HUB || 0)}</div>
-      <div>Limbo Playtime: ${formatTime(profileData.playtimePerGame?.LIMBO || 0)}</div>
-      <div>First Login: ${profileData.firstLogin ? new Date(profileData.firstLogin).toLocaleString() : "N/A"}</div>
-      <div>Last Login: ${profileData.lastLogin ? new Date(profileData.lastLogin).toLocaleString() : "N/A"}</div>
-      <div>Last Server: ${profileData.lastServer || "N/A"}</div>
+      <div class="profile-grid">
+        <div class="stat-card"><h4>Playtime</h4>
+          <p>Total: ${formatTime(profileData.playtimes?.total || 0)}</p>
+          <p>SkyBlock: ${formatTime(profileData.playtimes?.SKYBLOCK || 0)}</p>
+          <p>Hub: ${formatTime(profileData.playtimes?.HUB || 0)}</p>
+        </div>
+
+        <div class="stat-card"><h4>Slayer & Combat</h4>
+          <p>Slayer Kills: ${memberData.slayerData?.killedSlayer || 0}</p>
+          <p>Max Damage: ${memberData.maxDamage || 0}</p>
+          <p>Max Crit: ${memberData.maxCritDamage || 0}</p>
+        </div>
+
+        <div class="stat-card"><h4>Coins & Skills</h4>
+          <p>Coin Purse: ${memberData.coinPurse || 0}</p>
+          <p>Level: ${memberData.level || 0}</p>
+          <p>Exp: ${memberData.exp || 0}</p>
+          <p>Unique Pets: ${memberData.uniquePets?.length || 0}</p>
+        </div>
+      </div>
     `;
   } catch (e) {
     console.error(e);
@@ -129,59 +143,7 @@ async function loadProfile(profileId) {
   }
 }
 
-// ---- STATS GRID ----
-function renderStats(data) {
-  const grid = document.getElementById("stats-grid");
-  grid.innerHTML = "";
-
-  // Playtime
-  const playtime = data.playtimePerGame || {};
-  grid.innerHTML += statCard("⏱️ Playtime", [
-    ["Total", formatTime(data.totalPlaytime || 0)],
-    ["SkyBlock", formatTime(playtime.SKYBLOCK || 0)],
-    ["Hub", formatTime(playtime.HUB || 0)],
-    ["Limbo", formatTime(playtime.LIMBO || 0)]
-  ]);
-
-  // Login Info
-  grid.innerHTML += statCard("📅 Login Info", [
-    ["First Login", data.firstLogin ? new Date(data.firstLogin).toLocaleString() : "N/A"],
-    ["Last Login", data.lastLogin ? new Date(data.lastLogin).toLocaleString() : "N/A"],
-    ["Last Server", data.lastServer || "N/A"]
-  ]);
-
-  // SkyBlock Level
-  grid.innerHTML += statCard("⭐ SkyBlock Level", [
-    ["Level", data.skyBlockLevel || 0],
-    ["Experience", data.skyBlockExp || 0]
-  ]);
-
-  // Combat Stats
-  const combat = data.combatStats || {};
-  grid.innerHTML += statCard("⚔️ Combat Stats", [
-    ["Total Kills", combat.totalKills || 0],
-    ["Total Deaths", combat.totalDeaths || 0],
-    ["Max Damage", combat.maxDamage || 0],
-    ["Max Crit", combat.maxCrit || 0]
-  ]);
-
-  // Account Info
-  grid.innerHTML += statCard("👤 Account Info", [
-    ["Language", data.language || "N/A"],
-    ["Chat in Hubs", data.chatVisible || "Visible"],
-    ["Friend Requests", data.friendRequests || "ALL"],
-    ["Private Messages", data.privateMessages || "ALL"]
-  ]);
-}
-
 // ---- HELPERS ----
-function statCard(title, values) {
-  return `<div class="stat-card">
-    <h4>${title}</h4>
-    ${values.map(v => `<p><strong>${v[0]}:</strong> ${v[1]}</p>`).join("")}
-  </div>`;
-}
-
 function formatTime(seconds) {
   const h = Math.floor(seconds / 3600);
   const d = Math.floor(h / 24);
