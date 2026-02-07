@@ -229,3 +229,53 @@ async function fetchBazaarItems() {
     console.error(e);
   }
 }
+
+function createProfileTabs(data) {
+  const profiles = data.stats.skyBlock.profiles;
+  const profileIds = Object.keys(profiles);
+
+  const container = document.createElement("div");
+  container.classList.add("card");
+  container.innerHTML = `<h2>SkyBlock Profiles</h2> <div id="profile-tabs"></div>`;
+
+  const tabs = document.createElement("div");
+  tabs.style.display = "flex";
+  tabs.style.gap = "5px";
+  const content = document.createElement("div");
+  content.style.marginTop = "10px";
+
+  profileIds.forEach((id, index) => {
+    const profile = profiles[id];
+    const tab = document.createElement("button");
+    tab.textContent = profile.cuteName;
+    tab.onclick = () => loadProfile(id, content);
+    tabs.appendChild(tab);
+
+    // Load first profile by default
+    if (index === 0) loadProfile(id, content);
+  });
+
+  container.querySelector("#profile-tabs").appendChild(tabs);
+  container.querySelector("#profile-tabs").appendChild(content);
+  document.getElementById("content").appendChild(container);
+}
+
+// Load a profile's detailed info
+async function loadProfile(profileId, container) {
+  try {
+    container.innerHTML = "Loading...";
+    const res = await fetch(`${workerURL}/v1/skyblock/profile/${profileId}`);
+    const profileData = await res.json();
+
+    container.innerHTML = `
+      <div class="small">Profile ID: ${profileId}</div>
+      <div class="small">Cute Name: ${profileData.cuteName ?? "N/A"}</div>
+      <div class="small">Coins: ${profileData.coins ?? "0"}</div>
+      <div class="small">Cakes Claimed: ${profileData.sbClaimedCakes?.length ?? 0}</div>
+      <div class="small">Playtime: ${profileData.totalPlaytime ? fmt(profileData.totalPlaytime) : "0d 0h"}</div>
+    `;
+  } catch (e) {
+    console.error(e);
+    container.innerHTML = "Failed to load profile.";
+  }
+}
