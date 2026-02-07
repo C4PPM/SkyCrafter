@@ -28,15 +28,21 @@ async function search(usernameOverride) {
     document.getElementById("network-xp").textContent = data.networkExp ?? 0;
     document.getElementById("network-coins").textContent = (data.networkCoins ?? 0).toLocaleString();
 
-    // 4️⃣ Player skin head
-    const skinImg = document.getElementById("player-skin");
-    if (data.uuid) {
-      const uuid = data.uuid.replace(/-/g, "");
-      skinImg.src = `https://crafatar.com/avatars/${uuid}?size=64&overlay`;
-      skinImg.alt = `${data.name}'s Skin Head`;
-    } else {
-      skinImg.src = "https://crafatar.com/avatars/8667ba71b85a4004af54457a9734eed7?size=64&overlay";
-      skinImg.alt = "Default Skin Head";
+// Player skin head
+const skinImg = document.getElementById("player-skin");
+let uuid = data.uuid ?? ""; // Get UUID from API
+uuid = uuid.replace(/-/g, ""); // Remove dashes if present
+
+// If no UUID, fallback to default Steve head
+if (!uuid) {
+  skinImg.src = "https://crafatar.com/avatars/8667ba71b85a4004af54457a9734eed7?size=64&overlay";
+} else {
+  skinImg.src = `https://crafatar.com/avatars/${uuid}?size=64&overlay`;
+}
+
+// Ensure alt text
+skinImg.alt = `${data.name ?? "Player"} Skin Head`;
+
     }
 
     // 5️⃣ Update login info
