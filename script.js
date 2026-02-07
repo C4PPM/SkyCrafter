@@ -1,13 +1,27 @@
 const workerURL = "https://skycrafter.finbob512.workers.dev/";
 
+let lastSearch = 0;
+const SEARCH_COOLDOWN = 3000; // 3 seconds
+
 async function search() {
+  const now = Date.now();
+  if (now - lastSearch < SEARCH_COOLDOWN) {
+    alert("Please wait a few seconds before searching again.");
+    return;
+  }
+  lastSearch = now;
+
   const username = document.getElementById("username").value.trim();
   if (!username) return;
 
   try {
     const res = await fetch(`${workerURL}?username=${username}`);
     if (!res.ok) throw new Error("Player not found");
+
     const data = await res.json();
+
+    // Check basic validity
+    if (!data.name || !data.uuid) throw new Error("Invalid data");
 
     // Show RAW JSON button
     const jsonBtn = document.getElementById("view-json");
@@ -22,18 +36,18 @@ async function search() {
 
   } catch (e) {
     console.error(e);
-    alert("Player not found or failed to load.");
     document.getElementById("player-container").classList.add("hidden");
     document.getElementById("stats-grid").innerHTML = "";
+    alert("Player not found or failed to load.");
   }
 }
 
-// Render Player Info
+// ---------------- Player Info ----------------
 function renderPlayer(data) {
-  document.getElementById("player-name").textContent = data.name;
-  document.getElementById("player-uuid").textContent = data.uuid.replace(/-/g, "");
-  document.getElementById("player-rank").textContent = data.selectedRank;
-  document.getElementById("player-pixel").textContent = data.pixelId;
+  document.getElementById("player-name").textContent = data.name || "Unknown";
+  document.getElementById("player-uuid").textContent = (data.uuid || "").replace(/-/g, "");
+  document.getElementById("player-rank").textContent = data.selectedRank || "DEFAULT";
+  document.getElementById("player-pixel").textContent = data.pixelId || "N/A";
   document.getElementById("network-xp").textContent = Math.floor(data.networkExp || 0);
   document.getElementById("network-coins").textContent = (data.networkCoins || 0).toLocaleString();
 
@@ -43,28 +57,35 @@ function renderPlayer(data) {
   skinImg.src = uuid
     ? `https://crafatar.com/avatars/${uuid}?size=64&overlay`
     : "https://crafatar.com/avatars/8667ba71b85a4004af54457a9734eed7?size=64&overlay";
-  skinImg.alt = `${data.name} Skin Head`;
+  skinImg.alt = `${data.name || "Player"} Skin Head`;
 }
 
-// Profiles
+// ---------------- Profiles ----------------
 function renderProfiles(data) {
   const profileContainer = document.getElementById("profile-tabs");
   const profileContent = document.getElementById("profile-content");
   profileContainer.innerHTML = "";
   profileContent.innerHTML = "";
 
-  const profiles = Object.values(data.stats.skyBlock.profiles);
+  const profiles = Object.values(data.stats?.skyBlock?.profiles || []);
   document.getElementById("profiles-count").textContent = profiles.length;
+
+  if (profiles.length === 0) {
+    profileContent.textContent = "No SkyBlock profiles available.";
+    return;
+  }
+
+  const activeProfileId = data.stats?.skyBlock?.profileId || profiles[0]?.profileId;
 
   profiles.forEach(profile => {
     const btn = document.createElement("div");
     btn.className = "profile-btn";
-    if (profile.profileId === data.stats.skyBlock.profileId) btn.classList.add("active");
+    if (profile.profileId === activeProfileId) btn.classList.add("active");
 
     btn.innerHTML = `
-      <div class="profile-name">${profile.cuteName}</div>
-      <div class="profile-star">${profile.profileId === data.stats.skyBlock.profileId ? "★" : ""}</div>
-      <div class="profile-id">${profile.profileId.slice(0,8)}...</div>
+      <div class="profile-name">${profile.cuteName || "Unknown"}</div>
+      <div class="profile-star">${profile.profileId === activeProfileId ? "★" : ""}</div>
+      <div class="profile-id">${profile.profileId?.slice(0, 8) || ""}...</div>
     `;
 
     btn.onclick = () => {
@@ -76,53 +97,89 @@ function renderProfiles(data) {
     profileContainer.appendChild(btn);
   });
 
-  loadProfile(data.stats.skyBlock.profileId);
+  loadProfile(activeProfileId);
 }
 
-// Load profile stats
+// ---------------- Profile Stats ----------------
 async function loadProfile(profileId) {
   const container = document.getElementById("profile-content");
-  container.innerHTML = "Loading...";
+  container.innerHTML = "Loading profile stats...";
 
   try {
     const res = await fetch(`${workerURL}/v1/skyblock/profile/${profileId}`);
+    if (!res.ok) throw new Error("Failed to fetch profile");
     const profileData = await res.json();
 
-    // Playtime
-    const playtime = profileData.playtimePerGame || {};
-    document.getElementById("playtime-total").textContent = formatTime(profileData.totalPlaytime || 0);
-    document.getElementById("playtime-skyblock").textContent = formatTime(playtime.SKYBLOCK || 0);
-    document.getElementById("playtime-hub").textContent = formatTime(playtime.HUB || 0);
-    document.getElementById("playtime-limbo").textContent = formatTime(playtime.LIMBO || 0);
+    container.innerHTML = `
+      <div>Profile ID: ${profileData.profileId || "N/A"}</div>
+      <div>Total Playtime: ${formatTime(profileData.totalPlaytime || 0)}</div>
+      <div>SkyBlock Playtime: ${formatTime(profileData.playtimePerGame?.SKYBLOCK || 0)}</div>
+      <div>Hub Playtime: ${formatTime(profileData.playtimePerGame?.HUB || 0)}</div>
+      <div>Limbo Playtime: ${formatTime(profileData.playtimePerGame?.LIMBO || 0)}</div>
+      <div>First Login: ${profileData.firstLogin ? new Date(profileData.firstLogin).toLocaleString() : "N/A"}</div>
+      <div>Last Login: ${profileData.lastLogin ? new Date(profileData.lastLogin).toLocaleString() : "N/A"}</div>
+      <div>Last Server: ${profileData.lastServer || "N/A"}</div>
+    `;
 
-    // Login
-    document.getElementById("first-login").textContent = new Date(profileData.firstLogin).toLocaleString();
-    document.getElementById("last-login").textContent = new Date(profileData.lastLogin).toLocaleString();
-    document.getElementById("last-server").textContent = profileData.lastServer;
-
-    // SkyBlock Level
-    document.getElementById("sb-level").textContent = profileData.skyBlockLevel || 0;
-    document.getElementById("sb-exp").textContent = profileData.skyBlockExp || 0;
-
-    // Combat Stats
-    document.getElementById("combat-kills").textContent = profileData.combatStats?.totalKills || 0;
-    document.getElementById("combat-deaths").textContent = profileData.combatStats?.totalDeaths || 0;
-    document.getElementById("combat-max-dmg").textContent = profileData.combatStats?.maxDamage || 0;
-    document.getElementById("combat-max-crit").textContent = profileData.combatStats?.maxCrit || 0;
-
-    // Account Info
-    document.getElementById("account-lang").textContent = profileData.language || "N/A";
-    document.getElementById("account-chat").textContent = profileData.privateMessages || "ALL";
-    document.getElementById("account-friends").textContent = profileData.friendRequests || "ALL";
-    document.getElementById("account-pms").textContent = profileData.privateMessages || "ALL";
-
-    container.innerHTML = ""; // clear after loading
   } catch (e) {
     console.error(e);
     container.innerHTML = "Failed to load profile.";
   }
 }
 
+// ---------------- Stats ----------------
+function renderStats(data) {
+  const grid = document.getElementById("stats-grid");
+  grid.innerHTML = "";
+
+  // Playtime
+  const playtime = data.playtimePerGame || {};
+  grid.innerHTML += statCard("⏱️ Playtime", [
+    ["Total", formatTime(data.totalPlaytime || 0)],
+    ["SkyBlock", formatTime(playtime.SKYBLOCK || 0)],
+    ["Hub", formatTime(playtime.HUB || 0)]
+  ]);
+
+  // Login Info
+  grid.innerHTML += statCard("📅 Login Info", [
+    ["First Login", data.firstLogin ? new Date(data.firstLogin).toLocaleString() : "N/A"],
+    ["Last Login", data.lastLogin ? new Date(data.lastLogin).toLocaleString() : "N/A"],
+    ["Last Server", data.lastServer || "N/A"]
+  ]);
+
+  // SkyBlock Level
+  grid.innerHTML += statCard("⭐ SkyBlock Level", [
+    ["Level", data.skyBlockLevel || 0],
+    ["Experience", data.skyBlockExp || 0]
+  ]);
+
+  // Combat Stats
+  const combat = data.combatStats || {};
+  grid.innerHTML += statCard("⚔️ Combat Stats", [
+    ["Total Kills", combat.totalKills || 0],
+    ["Total Deaths", combat.totalDeaths || 0],
+    ["Max Damage", combat.maxDamage || 0],
+    ["Max Crit", combat.maxCrit || 0]
+  ]);
+
+  // Account Info
+  grid.innerHTML += statCard("👤 Account Info", [
+    ["Language", data.language || "N/A"],
+    ["Chat in Hubs", data.chatVisible || "Visible"],
+    ["Friend Requests", data.friendRequests || "ALL"],
+    ["Private Messages", data.privateMessages || "ALL"]
+  ]);
+}
+
+// Helper to create stat cards
+function statCard(title, values) {
+  return `<div class="stat-card">
+    <h4>${title}</h4>
+    ${values.map(v => `<p><strong>${v[0]}:</strong> ${v[1]}</p>`).join("")}
+  </div>`;
+}
+
+// Format time
 function formatTime(seconds) {
   const h = Math.floor(seconds / 3600);
   const d = Math.floor(h / 24);
