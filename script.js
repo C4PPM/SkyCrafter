@@ -27,8 +27,19 @@ async function search(usernameOverride) {
     document.getElementById("network-xp").textContent = data.networkExp ?? 0;
     document.getElementById("network-coins").textContent = data.networkCoins?.toLocaleString() ?? 0;
 
-    // Skin head
-    document.getElementById("player-skin").src = `https://crafatar.com/avatars/${data.uuid}?size=64&overlay`;
+// Skin head
+const skinImg = document.getElementById("player-skin");
+if (data.uuid) {
+  // Remove dashes just in case
+  const uuid = data.uuid.replace(/-/g, "");
+  skinImg.src = `https://crafatar.com/avatars/${uuid}?size=64&overlay`;
+  skinImg.alt = `${data.name}'s Skin Head`;
+} else {
+  // Fallback Steve head
+  skinImg.src = "https://crafatar.com/avatars/8667ba71b85a4004af54457a9734eed7?size=64&overlay";
+  skinImg.alt = "Default Skin Head";
+}
+
 
     // Playtime
     const totalPlaytime = data.totalPlaytime || 0;
