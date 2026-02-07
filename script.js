@@ -1,12 +1,12 @@
 const workerURL = "https://skycrafter.finbob512.workers.dev/";
 
-// Search player
 async function search() {
   const username = document.getElementById("username").value.trim();
   if (!username) return;
 
   try {
     const res = await fetch(`${workerURL}?username=${username}`);
+    if (!res.ok) throw new Error("Player not found");
     const data = await res.json();
 
     // Show RAW JSON button
@@ -14,12 +14,17 @@ async function search() {
     jsonBtn.style.display = "inline-block";
     jsonBtn.onclick = () => window.open(`${workerURL}?username=${username}`, "_blank");
 
+    document.getElementById("player-container").classList.remove("hidden");
+
     renderPlayer(data);
     renderProfiles(data);
     renderStats(data);
+
   } catch (e) {
     console.error(e);
-    alert("Failed to load player data.");
+    alert("Player not found or failed to load.");
+    document.getElementById("player-container").classList.add("hidden");
+    document.getElementById("stats-grid").innerHTML = "";
   }
 }
 
@@ -32,7 +37,7 @@ function renderPlayer(data) {
   document.getElementById("network-xp").textContent = Math.floor(data.networkExp || 0);
   document.getElementById("network-coins").textContent = (data.networkCoins || 0).toLocaleString();
 
-  // Player head
+  // Player skin head using Crafatar
   const skinImg = document.getElementById("player-skin");
   const uuid = (data.uuid || "").replace(/-/g, "");
   skinImg.src = uuid
@@ -41,7 +46,7 @@ function renderPlayer(data) {
   skinImg.alt = `${data.name} Skin Head`;
 }
 
-// Render Profiles
+// Profiles
 function renderProfiles(data) {
   const profileContainer = document.getElementById("profile-tabs");
   const profileContent = document.getElementById("profile-content");
@@ -71,7 +76,6 @@ function renderProfiles(data) {
     profileContainer.appendChild(btn);
   });
 
-  // Load default selected profile
   loadProfile(data.stats.skyBlock.profileId);
 }
 
@@ -84,14 +88,14 @@ async function loadProfile(profileId) {
     const res = await fetch(`${workerURL}/v1/skyblock/profile/${profileId}`);
     const profileData = await res.json();
 
-    // Playtime per game
+    // Playtime
     const playtime = profileData.playtimePerGame || {};
     document.getElementById("playtime-total").textContent = formatTime(profileData.totalPlaytime || 0);
     document.getElementById("playtime-skyblock").textContent = formatTime(playtime.SKYBLOCK || 0);
     document.getElementById("playtime-hub").textContent = formatTime(playtime.HUB || 0);
     document.getElementById("playtime-limbo").textContent = formatTime(playtime.LIMBO || 0);
 
-    // Login info
+    // Login
     document.getElementById("first-login").textContent = new Date(profileData.firstLogin).toLocaleString();
     document.getElementById("last-login").textContent = new Date(profileData.lastLogin).toLocaleString();
     document.getElementById("last-server").textContent = profileData.lastServer;
@@ -100,26 +104,25 @@ async function loadProfile(profileId) {
     document.getElementById("sb-level").textContent = profileData.skyBlockLevel || 0;
     document.getElementById("sb-exp").textContent = profileData.skyBlockExp || 0;
 
-    // Combat stats
+    // Combat Stats
     document.getElementById("combat-kills").textContent = profileData.combatStats?.totalKills || 0;
     document.getElementById("combat-deaths").textContent = profileData.combatStats?.totalDeaths || 0;
     document.getElementById("combat-max-dmg").textContent = profileData.combatStats?.maxDamage || 0;
     document.getElementById("combat-max-crit").textContent = profileData.combatStats?.maxCrit || 0;
 
-    // Account info
+    // Account Info
     document.getElementById("account-lang").textContent = profileData.language || "N/A";
     document.getElementById("account-chat").textContent = profileData.privateMessages || "ALL";
     document.getElementById("account-friends").textContent = profileData.friendRequests || "ALL";
     document.getElementById("account-pms").textContent = profileData.privateMessages || "ALL";
 
-    container.innerHTML = ""; // Clear after loading
+    container.innerHTML = ""; // clear after loading
   } catch (e) {
     console.error(e);
     container.innerHTML = "Failed to load profile.";
   }
 }
 
-// Format seconds to days + hours
 function formatTime(seconds) {
   const h = Math.floor(seconds / 3600);
   const d = Math.floor(h / 24);
