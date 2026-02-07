@@ -3,6 +3,7 @@ const workerURL = "https://skycrafter.finbob512.workers.dev/";
 let lastSearch = 0;
 const SEARCH_COOLDOWN = 3000; // 3 seconds
 
+// ---- SEARCH FUNCTION ----
 async function search() {
   const now = Date.now();
   if (now - lastSearch < SEARCH_COOLDOWN) {
@@ -20,15 +21,16 @@ async function search() {
 
     const data = await res.json();
 
-    // Check basic validity
+    // Basic validation
     if (!data.name || !data.uuid) throw new Error("Invalid data");
+
+    // Show player container
+    document.getElementById("player-container").classList.remove("hidden");
 
     // Show RAW JSON button
     const jsonBtn = document.getElementById("view-json");
     jsonBtn.style.display = "inline-block";
     jsonBtn.onclick = () => window.open(`${workerURL}?username=${username}`, "_blank");
-
-    document.getElementById("player-container").classList.remove("hidden");
 
     renderPlayer(data);
     renderProfiles(data);
@@ -37,21 +39,23 @@ async function search() {
   } catch (e) {
     console.error(e);
     document.getElementById("player-container").classList.add("hidden");
+    document.getElementById("profile-tabs").innerHTML = "";
+    document.getElementById("profile-content").innerHTML = "";
     document.getElementById("stats-grid").innerHTML = "";
     alert("Player not found or failed to load.");
   }
 }
 
-// ---------------- Player Info ----------------
+// ---- PLAYER INFO ----
 function renderPlayer(data) {
   document.getElementById("player-name").textContent = data.name || "Unknown";
   document.getElementById("player-uuid").textContent = (data.uuid || "").replace(/-/g, "");
   document.getElementById("player-rank").textContent = data.selectedRank || "DEFAULT";
-  document.getElementById("player-pixel").textContent = data.pixelId || "N/A";
+  document.getElementById("player-pixel").textContent = `Pixel ID: ${data.pixelId || "N/A"}`;
   document.getElementById("network-xp").textContent = Math.floor(data.networkExp || 0);
   document.getElementById("network-coins").textContent = (data.networkCoins || 0).toLocaleString();
 
-  // Player skin head using Crafatar
+  // Load player head image from Crafatar
   const skinImg = document.getElementById("player-skin");
   const uuid = (data.uuid || "").replace(/-/g, "");
   skinImg.src = uuid
@@ -60,7 +64,7 @@ function renderPlayer(data) {
   skinImg.alt = `${data.name || "Player"} Skin Head`;
 }
 
-// ---------------- Profiles ----------------
+// ---- SKYBLOCK PROFILES ----
 function renderProfiles(data) {
   const profileContainer = document.getElementById("profile-tabs");
   const profileContent = document.getElementById("profile-content");
@@ -100,7 +104,7 @@ function renderProfiles(data) {
   loadProfile(activeProfileId);
 }
 
-// ---------------- Profile Stats ----------------
+// ---- LOAD PROFILE DETAILS ----
 async function loadProfile(profileId) {
   const container = document.getElementById("profile-content");
   container.innerHTML = "Loading profile stats...";
@@ -111,7 +115,6 @@ async function loadProfile(profileId) {
     const profileData = await res.json();
 
     container.innerHTML = `
-      <div>Profile ID: ${profileData.profileId || "N/A"}</div>
       <div>Total Playtime: ${formatTime(profileData.totalPlaytime || 0)}</div>
       <div>SkyBlock Playtime: ${formatTime(profileData.playtimePerGame?.SKYBLOCK || 0)}</div>
       <div>Hub Playtime: ${formatTime(profileData.playtimePerGame?.HUB || 0)}</div>
@@ -120,14 +123,13 @@ async function loadProfile(profileId) {
       <div>Last Login: ${profileData.lastLogin ? new Date(profileData.lastLogin).toLocaleString() : "N/A"}</div>
       <div>Last Server: ${profileData.lastServer || "N/A"}</div>
     `;
-
   } catch (e) {
     console.error(e);
     container.innerHTML = "Failed to load profile.";
   }
 }
 
-// ---------------- Stats ----------------
+// ---- STATS GRID ----
 function renderStats(data) {
   const grid = document.getElementById("stats-grid");
   grid.innerHTML = "";
@@ -137,7 +139,8 @@ function renderStats(data) {
   grid.innerHTML += statCard("⏱️ Playtime", [
     ["Total", formatTime(data.totalPlaytime || 0)],
     ["SkyBlock", formatTime(playtime.SKYBLOCK || 0)],
-    ["Hub", formatTime(playtime.HUB || 0)]
+    ["Hub", formatTime(playtime.HUB || 0)],
+    ["Limbo", formatTime(playtime.LIMBO || 0)]
   ]);
 
   // Login Info
@@ -171,7 +174,7 @@ function renderStats(data) {
   ]);
 }
 
-// Helper to create stat cards
+// ---- HELPERS ----
 function statCard(title, values) {
   return `<div class="stat-card">
     <h4>${title}</h4>
@@ -179,7 +182,6 @@ function statCard(title, values) {
   </div>`;
 }
 
-// Format time
 function formatTime(seconds) {
   const h = Math.floor(seconds / 3600);
   const d = Math.floor(h / 24);
