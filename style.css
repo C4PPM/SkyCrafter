@@ -36,25 +36,26 @@ header p { font-size:1rem; opacity:0.8; }
 .search-section button:hover { background:#0ea5e9; }
 
 /* ---- Top Grid: Player + Profiles ---- */
-.top-grid { display:flex; flex-wrap:wrap; gap:15px; justify-content:center; }
+.top-grid { display:flex; gap:15px; justify-content:center; flex-wrap:wrap; }
 
 /* ---- Player Header ---- */
 .player-header {
   background:#1e293b; border-radius:10px;
   padding:20px; display:flex; flex-direction:column;
-  align-items:center; width:280px;
+  align-items:center; width:280px; /* same as profiles */
+  min-height:380px; /* taller box */
 }
 .player-header img {
   width:64px; height:64px; border:2px solid #38bdf8; border-radius:8px; margin-bottom:10px;
 }
-.player-header h2 { font-size:1.5rem; margin-bottom:5px; }
-.player-header .small-text { font-size:0.85rem; opacity:0.7; margin-bottom:5px; }
+.player-header h2 { font-size:1.5rem; margin-bottom:5px; text-align:center; }
+.player-header .small-text { font-size:0.85rem; opacity:0.7; margin-bottom:5px; text-align:center; }
 .rank-plate {
-  background:#2563eb; color:white; padding:4px 8px; border-radius:6px;
-  display:flex; gap:8px; align-items:center; margin-bottom:5px;
+  background:#2563eb; color:white; padding:4px 12px; border-radius:6px;
+  margin-bottom:5px; font-weight:bold; text-align:center; width:100%;
 }
-.rank-plate span.pixelid-text { font-size:0.75rem; opacity:0.7; }
-.secondary-info { font-size:0.8rem; opacity:0.7; margin:2px 0; }
+.pixelid-text { font-size:0.75rem; opacity:0.7; margin-bottom:5px; text-align:center; }
+.secondary-info { font-size:0.8rem; opacity:0.7; margin:2px 0; text-align:center; }
 
 /* ---- Profiles Section ---- */
 .profiles-section {
@@ -67,12 +68,14 @@ header p { font-size:1rem; opacity:0.8; }
 .profile-btn {
   display:flex; flex-direction:column; align-items:center; width:160px;
   padding:15px; background:#1e293b; color:#38bdf8; font-weight:bold; border-radius:10px;
-  cursor:pointer; transition:0.2s;
+  cursor:pointer; transition:0.2s; text-align:center;
 }
 .profile-btn.active { background:#2563eb; color:white; }
 .profile-btn .profile-name { font-size:1.2rem; margin-bottom:5px; }
 .profile-btn .profile-star { color:#facc15; font-weight:bold; margin-bottom:5px; }
-.profile-btn .profile-id { font-size:0.8rem; opacity:0.8; }
+.profile-btn .profile-id { font-size:0.8rem; opacity:0.8; word-break:break-all; }
+
+/* ---- Profile Content ---- */
 .profile-content { background:#1e293b; padding:10px; border-radius:10px; margin-top:10px; text-align:center; }
 
 /* ---- Stats Grid ---- */
