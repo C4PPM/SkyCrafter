@@ -1,88 +1,45 @@
-/* ---- Basic Reset ---- */
-* { margin: 0; padding: 0; box-sizing: border-box; }
-body { font-family: 'Montserrat', sans-serif; background: #0a0f1b; color: #e5e7eb; line-height: 1.5; }
+/* ---- Reset ---- */
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family: 'Montserrat', sans-serif; background:#e5f2ff; color:#0f172a; transition:0.3s; }
+.hidden { display:none; }
 
 /* ---- Header ---- */
-header {
-  text-align: center;
-  padding: 20px;
-  background: linear-gradient(90deg, #1e293b, #111827);
-  box-shadow: 0 4px 8px rgba(0,0,0,0.5);
-}
-header h1 { font-size: 2.5rem; color: #38bdf8; }
-header p { font-size: 1rem; color: #94a3b8; margin-top: 5px; }
+header { display:flex; justify-content:space-between; align-items:center; padding:15px 30px; background:#38bdf8; color:white; }
+header h1 { font-size:2rem; }
+header p { font-size:1rem; opacity:0.9; }
+header button { margin-left:10px; padding:5px 10px; border:none; border-radius:5px; cursor:pointer; font-weight:bold; }
+header button:hover { opacity:0.9; }
 
-/* ---- Search Bar ---- */
-.search-bar {
-  display: flex;
-  justify-content: center;
-  margin: 20px 0;
-  gap: 10px;
-}
-.search-bar input {
-  padding: 12px 15px;
-  width: 250px;
-  border-radius: 8px;
-  border: none;
-  outline: none;
-  font-size: 1rem;
-}
-.search-bar button {
-  padding: 12px 20px;
-  background: #38bdf8;
-  color: #111827;
-  font-weight: bold;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: 0.2s;
-}
-.search-bar button:hover { background: #0ea5e9; }
+/* ---- Light/Dark Mode ---- */
+body.dark { background:#0f172a; color:#e5e7eb; }
+body.dark header { background:#1e40af; }
 
-/* ---- Grid for cards ---- */
-.grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 20px;
-  padding: 20px;
-}
+/* ---- Search ---- */
+.search-section { display:flex; justify-content:center; margin:20px 0; gap:10px; }
+.search-section input { padding:10px; width:250px; border-radius:8px; border:1px solid #38bdf8; }
+.search-section button { padding:10px 15px; border:none; border-radius:8px; background:#38bdf8; color:white; font-weight:bold; cursor:pointer; }
+.search-section button:hover { background:#0ea5e9; }
 
-/* ---- Cards ---- */
-.card {
-  background: #111827;
-  border-radius: 12px;
-  padding: 20px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.6);
-  transition: 0.2s;
-}
-.card:hover { transform: translateY(-5px); box-shadow: 0 6px 16px rgba(0,0,0,0.7); }
-.card h2 { color: #38bdf8; margin-bottom: 10px; }
-.label { color: #94a3b8; font-size: 0.85rem; }
-.value { font-size: 1.2rem; font-weight: bold; margin: 4px 0; }
-.small { font-size: 0.85rem; color: #cbd5e1; }
-.bar { background: #1e293b; height: 10px; border-radius: 5px; overflow: hidden; margin-top: 6px; }
-.bar > div { background: #38bdf8; height: 100%; }
+/* ---- Player Header ---- */
+.player-header { display:flex; justify-content:space-between; align-items:center; background:#f0f9ff; padding:15px 20px; border-radius:10px; margin-bottom:20px; }
+body.dark .player-header { background:#1e293b; }
+.player-left { display:flex; align-items:center; gap:15px; }
+.player-left img { width:64px; height:64px; border-radius:8px; border:2px solid #38bdf8; }
+.player-left h2 { font-size:1.5rem; }
+.player-left p { font-size:0.9rem; opacity:0.8; }
+.player-right p { margin:3px 0; }
 
 /* ---- Profile Tabs ---- */
-#profile-tabs button {
-  background: #1e293b;
-  color: #e5e7eb;
-  border: none;
-  padding: 6px 12px;
-  border-radius: 6px;
-  cursor: pointer;
-  margin-right: 5px;
-  transition: 0.2s;
-}
-#profile-tabs button:hover { background: #2563eb; }
-#profile-tabs button.active { background: #38bdf8; color: #111827; }
+.profiles-section { margin-bottom:20px; }
+.tabs { display:flex; gap:5px; margin:10px 0; }
+.tabs button { padding:6px 12px; border:none; border-radius:5px; cursor:pointer; background:#cbeafe; color:#1e40af; font-weight:bold; transition:0.2s; }
+.tabs button.active { background:#38bdf8; color:white; }
+body.dark .tabs button { background:#1e293b; color:#38bdf8; }
+body.dark .tabs button.active { background:#2563eb; }
 
-/* ---- Footer ---- */
-footer {
-  text-align: center;
-  padding: 15px;
-  margin-top: 30px;
-  font-size: 0.85rem;
-  color: #94a3b8;
-  border-top: 1px solid #1e293b;
-}
+/* ---- Stats Grid ---- */
+.stats-grid { display:grid; grid-template-columns: repeat(auto-fit,minmax(200px,1fr)); gap:15px; }
+.stat-card { background:#f0f9ff; padding:15px; border-radius:10px; }
+body.dark .stat-card { background:#1e293b; }
+.stat-card h4 { margin-bottom:8px; }
+.stat-card p { margin:3px 0; }
