@@ -1,91 +1,62 @@
-/* ---- Reset & Body ---- */
+/* Reset & Body */
 * { margin:0; padding:0; box-sizing:border-box; }
 body {
   font-family: 'Montserrat', sans-serif;
-  background: #0f172a;
-  color: #e5e7eb;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
+  background:#0f172a;
+  color:#e5e7eb;
+  display:flex;
+  flex-direction:column;
+  min-height:100vh;
 }
-a { color: #38bdf8; text-decoration:none; }
+a { color:#38bdf8; text-decoration:none; }
 a:hover { text-decoration:underline; }
 
-/* ---- Header ---- */
-header {
-  padding: 20px 0;
-  text-align: center;
-  background: #1e293b;
-}
-.header-content { max-width: 900px; margin:0 auto; }
+/* Header */
+header { padding:20px 0; text-align:center; background:#1e293b; }
 header h1 { font-size:2.5rem; color:#38bdf8; }
-header p { font-size:1rem; opacity:0.8; }
+header p { opacity:0.8; }
 
-/* ---- Main Container ---- */
+/* Main Container */
 .main-container { max-width:900px; margin:30px auto; padding:0 15px; flex:1; }
 
-/* ---- Search Section ---- */
-.search-section {
-  display:flex; justify-content:center; gap:10px; margin-bottom:30px;
-}
+/* Search */
+.search-section { display:flex; justify-content:center; gap:10px; margin-bottom:30px; }
 .search-section input { flex:1; padding:10px 15px; border-radius:8px; border:none; }
 .search-section button {
-  padding:10px 15px; border:none; border-radius:8px;
-  background:#38bdf8; color:#0f172a; font-weight:bold; cursor:pointer; transition:0.2s;
+  padding:10px 15px; border:none; border-radius:8px; background:#38bdf8; color:#0f172a; font-weight:bold; cursor:pointer; transition:0.2s;
 }
 .search-section button:hover { background:#0ea5e9; }
 
-/* ---- Top Grid: Player + Profiles ---- */
-.top-grid { display:flex; gap:15px; justify-content:center; flex-wrap:wrap; }
-
-/* ---- Player Header ---- */
+/* Player Header */
+#player-container.hidden { display:none; }
 .player-header {
-  background:#1e293b; border-radius:10px;
-  padding:20px; display:flex; flex-direction:column;
-  align-items:center; width:280px; /* same as profiles */
-  min-height:380px; /* taller box */
+  background:#1e293b; border-radius:10px; padding:20px;
+  display:flex; flex-direction:column; align-items:center; width:100%; max-width:900px;
+  margin:0 auto 20px auto;
 }
-.player-header img {
-  width:64px; height:64px; border:2px solid #38bdf8; border-radius:8px; margin-bottom:10px;
-}
-.player-header h2 { font-size:1.5rem; margin-bottom:5px; text-align:center; }
-.player-header .small-text { font-size:0.85rem; opacity:0.7; margin-bottom:5px; text-align:center; }
-.rank-plate {
-  background:#2563eb; color:white; padding:4px 12px; border-radius:6px;
-  margin-bottom:5px; font-weight:bold; text-align:center; width:100%;
-}
+.player-header img { width:64px; height:64px; border:2px solid #38bdf8; border-radius:8px; margin-bottom:10px; }
+.player-header h2 { font-size:1.8rem; margin-bottom:5px; }
+.small-text { font-size:0.85rem; opacity:0.7; margin-bottom:5px; text-align:center; }
+.rank-plate { background:#2563eb; color:white; padding:5px 10px; border-radius:6px; font-weight:bold; text-align:center; margin-bottom:5px; width:auto; }
 .pixelid-text { font-size:0.75rem; opacity:0.7; margin-bottom:5px; text-align:center; }
 .secondary-info { font-size:0.8rem; opacity:0.7; margin:2px 0; text-align:center; }
 
-/* ---- Profiles Section ---- */
-.profiles-section {
-  background:#1e293b; border-radius:10px; padding:15px; width:280px;
-}
-.profiles-section h3 { text-align:center; margin-bottom:10px; }
-.profile-buttons {
-  display:flex; flex-wrap:wrap; gap:15px; justify-content:center;
-}
-.profile-btn {
-  display:flex; flex-direction:column; align-items:center; width:160px;
-  padding:15px; background:#1e293b; color:#38bdf8; font-weight:bold; border-radius:10px;
-  cursor:pointer; transition:0.2s; text-align:center;
-}
+/* Profiles Section */
+.profiles-section { background:#1e293b; border-radius:10px; padding:15px; margin-bottom:20px; width:100%; max-width:900px; margin:0 auto 20px auto; }
+.profiles-section h3 { text-align:center; margin-bottom:15px; }
+.profile-buttons { display:flex; flex-wrap:wrap; gap:15px; justify-content:center; }
+.profile-btn { display:flex; flex-direction:column; align-items:center; width:160px; padding:15px; background:#1e293b; color:#38bdf8; font-weight:bold; border-radius:10px; cursor:pointer; transition:0.2s; text-align:center; }
 .profile-btn.active { background:#2563eb; color:white; }
-.profile-btn .profile-name { font-size:1.2rem; margin-bottom:5px; }
-.profile-btn .profile-star { color:#facc15; font-weight:bold; margin-bottom:5px; }
-.profile-btn .profile-id { font-size:0.8rem; opacity:0.8; word-break:break-all; }
-
-/* ---- Profile Content ---- */
+.profile-name { font-size:1.2rem; margin-bottom:5px; }
+.profile-star { color:#facc15; font-weight:bold; margin-bottom:5px; }
+.profile-id { font-size:0.8rem; opacity:0.8; word-break:break-all; }
 .profile-content { background:#1e293b; padding:10px; border-radius:10px; margin-top:10px; text-align:center; }
 
-/* ---- Stats Grid ---- */
-.stats-grid {
-  display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
-  gap:15px; margin-top:20px;
-}
+/* Stats Grid */
+.stats-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:15px; }
 .stat-card { background:#1e293b; padding:15px; border-radius:10px; }
 .stat-card h4 { margin-bottom:8px; }
 .stat-card p { margin:3px 0; }
 
-/* ---- Footer ---- */
+/* Footer */
 footer { padding:15px 0; text-align:center; background:#111827; margin-top:auto; width:100%; }
