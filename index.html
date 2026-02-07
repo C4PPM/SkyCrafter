@@ -3,64 +3,57 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SkyCrafter</title>
+  <title>SkyCrafter - Player Stats Tracker</title>
   <link rel="stylesheet" href="style.css">
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
 </head>
-<body>
+<body class="dark-mode">
 
-  <!-- Header -->
+  <!-- HEADER -->
   <header>
     <h1>SkyCrafter</h1>
-    <p>Your CraftersMC player statistic tracker</p>
+    <p>CraftersMC player statistic tracker</p>
   </header>
 
-  <main class="main-container">
+  <!-- SEARCH BAR -->
+  <section id="search-section">
+    <input type="text" id="username" placeholder="Enter Minecraft Username">
+    <button onclick="search()">Search</button>
+    <button id="view-json" style="display:none;">View RAW JSON</button>
+  </section>
 
-    <!-- Search -->
-    <div class="search-section">
-      <input id="username" placeholder="Enter username">
-      <button onclick="search()">Search</button>
-      <button id="view-json" style="display:none;">View RAW JSON</button>
-    </div>
-
-    <!-- Player Info -->
-<div id="player-container" class="hidden">
-  <div id="player-left">
-    <img id="player-skin" src="" alt="Skin Head">
-    <div id="player-info">
-      <h2 id="player-name">Username</h2>
-      <div id="player-uuid">UUID</div>
-      <div id="player-rank-container">
-        <div id="player-rank">RANK</div>
-        <div id="player-pixel">Pixel ID: XXXXX</div>
+  <!-- PLAYER INFO -->
+  <section id="player-container" class="hidden">
+    <div class="player-card">
+      <img id="player-skin" src="" alt="Skin Head">
+      <div class="player-info">
+        <div class="player-name" id="player-name">Username</div>
+        <div class="player-uuid" id="player-uuid">UUID</div>
+        <div class="player-rank-plate" id="player-rank">Rank</div>
+        <div class="player-pixel" id="player-pixel">Pixel ID</div>
+      </div>
+      <div class="network-info">
+        <div>Network XP: <span id="network-xp">0</span></div>
+        <div>Network Coins: <span id="network-coins">0</span></div>
       </div>
     </div>
-  </div>
-  <div id="player-right">
-    <div>Network XP: <span id="network-xp"></span></div>
-    <div>Network Coins: <span id="network-coins"></span></div>
-  </div>
-</div>
+  </section>
 
+  <!-- SKYBLOCK PROFILES -->
+  <section id="skyblock-section" class="hidden">
+    <h2>SkyBlock Profiles (<span id="profiles-count">0</span> profiles)</h2>
+    <div id="profile-tabs" class="profile-tabs"></div>
+    <div id="profile-content" class="profile-content"></div>
+  </section>
 
-      <!-- SkyBlock Profiles -->
-      <div class="profiles-section">
-        <h3>SkyBlock Profiles (<span id="profiles-count">0</span>)</h3>
-        <div id="profile-tabs" class="profile-buttons"></div>
-        <div id="profile-content" class="profile-content"></div>
-      </div>
-    </div>
+  <!-- STATS GRID -->
+  <section id="stats-section">
+    <div id="stats-grid" class="stats-grid"></div>
+  </section>
 
-    <!-- Stats -->
-    <div class="stats-grid" id="stats-grid">
-      <!-- Populated dynamically -->
-    </div>
-
-  </main>
-
+  <!-- FOOTER -->
   <footer>
-    Powered by <a href="https://craftersmc.net" target="_blank">CraftersMC API</a> | Made by <a href="#" id="link-c4ppm">C4PPM</a>
+    <p>Powered by <a href="https://craftersmc.net" target="_blank">CraftersMC API</a></p>
+    <p><a href="#" id="my-data">C4PPM</a></p>
   </footer>
 
   <script src="script.js"></script>
