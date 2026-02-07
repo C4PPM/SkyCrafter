@@ -1,20 +1,32 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SkyCrafter</title>
   <link rel="stylesheet" href="style.css">
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
+  <header>
+    <h1>SkyCrafter</h1>
+    <p>Your CraftersMC SkyBlock stats at a glance</p>
+  </header>
 
-<h1>SkyCrafter</h1>
+  <main>
+    <section class="search-bar">
+      <input id="username" placeholder="Enter username">
+      <button onclick="search()">Search</button>
+    </section>
 
-<div class="search-bar">
-  <input id="username" placeholder="Enter username">
-  <button onclick="search()">Search</button>
-</div>
+    <section id="content"></section>
+  </main>
 
-<div id="content"></div>
+  <footer>
+    <p>Powered by CraftersMC API | Designed by You</p>
+  </footer>
 
-<script src="script.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>
