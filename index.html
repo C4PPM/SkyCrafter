@@ -3,33 +3,32 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SkyCrafter - Player Stats Tracker</title>
+  <title>SkyCrafter - Player Stats</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body class="dark-mode">
 
-  <!-- HEADER -->
   <header>
     <h1>SkyCrafter</h1>
-    <p>CraftersMC player statistic tracker</p>
+    <p>CraftersMC Player Stats Tracker</p>
   </header>
 
   <!-- SEARCH BAR -->
   <section id="search-section">
     <input type="text" id="username" placeholder="Enter Minecraft Username">
     <button onclick="search()">Search</button>
-    <button id="view-json" style="display:none;">View RAW JSON</button>
+    <button id="view-json" style="display:none;" onclick="viewRawJson()">View RAW JSON</button>
   </section>
 
   <!-- PLAYER INFO -->
   <section id="player-container" class="hidden">
     <div class="player-card">
-      <img id="player-skin" src="" alt="Skin Head">
+      <img id="player-skin" src="" alt="Player Head">
       <div class="player-info">
-        <div class="player-name" id="player-name">Username</div>
-        <div class="player-uuid" id="player-uuid">UUID</div>
-        <div class="player-rank-plate" id="player-rank">Rank</div>
-        <div class="player-pixel" id="player-pixel">Pixel ID</div>
+        <div id="player-name" class="player-name">Username</div>
+        <div id="player-uuid" class="player-uuid">UUID</div>
+        <div id="player-rank" class="player-rank-plate">Rank</div>
+        <div id="player-pixel" class="player-pixel">Pixel ID:</div>
       </div>
       <div class="network-info">
         <div>Network XP: <span id="network-xp">0</span></div>
@@ -46,14 +45,13 @@
   </section>
 
   <!-- STATS GRID -->
-  <section id="stats-section">
+  <section id="stats-section" class="hidden">
     <div id="stats-grid" class="stats-grid"></div>
   </section>
 
-  <!-- FOOTER -->
   <footer>
     <p>Powered by <a href="https://craftersmc.net" target="_blank">CraftersMC API</a></p>
-    <p><a href="#" id="my-data">C4PPM</a></p>
+    <p><a href="#" id="my-data" onclick="searchMyData()">C4PPM</a></p>
   </footer>
 
   <script src="script.js"></script>
