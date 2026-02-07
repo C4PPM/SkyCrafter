@@ -1,23 +1,20 @@
 const workerURL = "https://skycrafter.finbob512.workers.dev/";
 
-// Theme toggle
-const themeBtn = document.getElementById("toggle-theme");
-themeBtn.onclick = () => {
-  document.body.classList.toggle("dark");
-  themeBtn.textContent = document.body.classList.contains("dark") ? "☀️ Light Mode" : "🌙 Dark Mode";
-};
-
 // Search
-async function search() {
-  const username = document.getElementById("username").value.trim();
+async function search(usernameOverride) {
+  const username = usernameOverride || document.getElementById("username").value.trim();
   if (!username) return;
+
   try {
     const res = await fetch(`${workerURL}?username=${username}`);
     const data = await res.json();
 
     document.getElementById("player-data").classList.remove("hidden");
-    document.getElementById("view-json").style.display = "inline-block";
-    document.getElementById("view-json").onclick = () => {
+
+    // RAW JSON button
+    const jsonBtn = document.getElementById("view-json");
+    jsonBtn.style.display = "inline-block";
+    jsonBtn.onclick = () => {
       const w = window.open();
       w.document.write("<pre>" + JSON.stringify(data, null, 2) + "</pre>");
     };
@@ -31,7 +28,7 @@ async function search() {
     document.getElementById("network-coins").textContent = data.networkCoins?.toLocaleString() ?? 0;
 
     // Skin head
-    document.getElementById("player-skin").src = `https://crafatar.com/avatars/${data.uuid}?size=64`;
+    document.getElementById("player-skin").src = `https://crafatar.com/avatars/${data.uuid}?size=64&overlay`;
 
     // Playtime
     const total = data.totalPlaytime || 0;
@@ -60,6 +57,7 @@ async function search() {
 
     // Profiles Tabs
     createProfileTabs(data);
+
   } catch (e) {
     console.error(e);
     alert("Failed to fetch player data.");
@@ -106,3 +104,6 @@ function loadProfile(profile) {
     <p>Playtime: ${profile.totalPlaytime ? fmt(profile.totalPlaytime) : "0d 0h"}</p>
   `;
 }
+
+// Footer C4PPM click
+document.getElementById("link-c4ppm").onclick = () => search("C4PPM");
