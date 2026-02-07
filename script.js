@@ -1,151 +1,101 @@
-const workerURL = "https://skycrafter.finbob512.workers.dev/";
+const WORKER_URL = "https://skycrafter.finbob512.workers.dev/"; // <- restore your actual Cloudflare worker URL
 
-let lastSearch = 0;
-const SEARCH_COOLDOWN = 3000; // 3 seconds
+let currentPlayerData = null;
 
-// ---- SEARCH FUNCTION ----
-async function search() {
-  const now = Date.now();
-  if (now - lastSearch < SEARCH_COOLDOWN) {
-    alert("Please wait a few seconds before searching again.");
-    return;
-  }
-  lastSearch = now;
-
-  const username = document.getElementById("username").value.trim();
+async function search(usernameInput) {
+  const username = usernameInput || document.getElementById("username").value.trim();
   if (!username) return;
 
-  try {
-    const res = await fetch(`${workerURL}?username=${username}`);
-    if (!res.ok) throw new Error("Player not found");
+  hideSections();
 
+  try {
+    const res = await fetch(`${WORKER_URL}?username=${username}`);
     const data = await res.json();
 
-    // Basic validation
-    if (!data.name || !data.uuid) throw new Error("Invalid data");
+    if (!data || data.error) throw new Error("Player not found");
 
-    // Show player container
-    document.getElementById("player-container").classList.remove("hidden");
+    currentPlayerData = data;
+    displayPlayer(data);
+    displaySkyblockProfiles(data.skyblockProfiles || []);
+    displayStats(data);
+    document.getElementById("view-json").style.display = "inline-block";
 
-    // Show RAW JSON button
-    const jsonBtn = document.getElementById("view-json");
-    jsonBtn.style.display = "inline-block";
-    jsonBtn.onclick = () => window.open(`${workerURL}?username=${username}`, "_blank");
-
-    renderPlayer(data);
-    renderProfiles(data);
-
-  } catch (e) {
-    console.error(e);
-    document.getElementById("player-container").classList.add("hidden");
-    document.getElementById("profile-tabs").innerHTML = "";
-    document.getElementById("profile-content").innerHTML = "";
-    document.getElementById("stats-grid").innerHTML = "";
+  } catch (err) {
     alert("Player not found or failed to load.");
+    console.error(err);
   }
 }
 
-// ---- PLAYER INFO ----
-function renderPlayer(data) {
-  document.getElementById("player-name").textContent = data.name || "Unknown";
-  document.getElementById("player-uuid").textContent = (data.uuid || "").replace(/-/g, "");
-  document.getElementById("player-rank").textContent = data.selectedRank || "DEFAULT";
-  document.getElementById("player-pixel").textContent = `Pixel ID: ${data.pixelId || "N/A"}`;
-  document.getElementById("network-xp").textContent = Math.floor(data.networkExp || 0);
-  document.getElementById("network-coins").textContent = (data.networkCoins || 0).toLocaleString();
-
-  // Load player head image from Crafatar
-  const skinImg = document.getElementById("player-skin");
-  const uuid = (data.uuid || "").replace(/-/g, "");
-  skinImg.src = uuid
-    ? `https://crafatar.com/avatars/${uuid}?size=64&overlay`
-    : "https://crafatar.com/avatars/8667ba71b85a4004af54457a9734eed7?size=64&overlay";
-  skinImg.alt = `${data.name || "Player"} Skin Head`;
+function hideSections() {
+  document.getElementById("player-container").classList.add("hidden");
+  document.getElementById("skyblock-section").classList.add("hidden");
+  document.getElementById("stats-section").classList.add("hidden");
 }
 
-// ---- SKYBLOCK PROFILES ----
-function renderProfiles(data) {
-  const profileContainer = document.getElementById("profile-tabs");
-  const profileContent = document.getElementById("profile-content");
-  profileContainer.innerHTML = "";
-  profileContent.innerHTML = "";
+function displayPlayer(data) {
+  const skinImg = document.getElementById("player-skin");
+  skinImg.src = `https://crafatar.com/avatars/${data.uuid}?size=64&overlay`;
+  skinImg.alt = `${data.username} Head`;
 
-  const profiles = Object.values(data.stats?.skyBlock?.profiles || []);
+  document.getElementById("player-name").textContent = data.username;
+  document.getElementById("player-uuid").textContent = data.uuid;
+  document.getElementById("player-rank").textContent = data.rank || "DEFAULT";
+  document.getElementById("player-pixel").textContent = `Pixel ID: ${data.pixelId || "N/A"}`;
+  document.getElementById("network-xp").textContent = data.networkXp || 0;
+  document.getElementById("network-coins").textContent = data.networkCoins || 0;
+
+  document.getElementById("player-container").classList.remove("hidden");
+}
+
+function displaySkyblockProfiles(profiles) {
+  const tabs = document.getElementById("profile-tabs");
+  tabs.innerHTML = "";
   document.getElementById("profiles-count").textContent = profiles.length;
 
-  if (profiles.length === 0) {
-    profileContent.textContent = "No SkyBlock profiles available.";
-    return;
-  }
-
-  const activeProfileId = data.stats?.skyBlock?.profileId || profiles[0]?.profileId;
-
   profiles.forEach(profile => {
-    const btn = document.createElement("div");
-    btn.className = "profile-btn";
-    if (profile.profileId === activeProfileId) btn.classList.add("active");
-
-    btn.innerHTML = `
-      <div class="profile-name">${profile.cuteName || "Unknown"}</div>
-      <div class="profile-star">${profile.profileId === activeProfileId ? "★" : ""}</div>
-      <div class="profile-id">${profile.profileId?.slice(0, 8) || ""}...</div>
-    `;
-
+    const btn = document.createElement("button");
+    btn.innerHTML = `<strong>${profile.cuteName}</strong><br>${profile.id}`;
+    if (profile.current) btn.classList.add("active");
     btn.onclick = () => {
-      document.querySelectorAll(".profile-btn").forEach(b => b.classList.remove("active"));
+      profiles.forEach(p => p.current = false);
+      profile.current = true;
+      tabs.querySelectorAll("button").forEach(b => b.classList.remove("active"));
       btn.classList.add("active");
-      loadProfile(profile.profileId);
+      displayStats(profile);
     };
-
-    profileContainer.appendChild(btn);
+    tabs.appendChild(btn);
   });
 
-  loadProfile(activeProfileId);
+  document.getElementById("skyblock-section").classList.remove("hidden");
 }
 
-// ---- LOAD PROFILE DETAILS ----
-async function loadProfile(profileId) {
-  const container = document.getElementById("profile-content");
-  container.innerHTML = "Loading profile stats...";
+function displayStats(profile) {
+  const statsGrid = document.getElementById("stats-grid");
+  statsGrid.innerHTML = "";
 
-  try {
-    const res = await fetch(`${workerURL}/v1/skyblock/profile/${profileId}`);
-    if (!res.ok) throw new Error("Failed to fetch profile");
-    const profileData = await res.json();
+  // Example stats boxes
+  const stats = [
+    { title: "Playtime", value: profile.playtime || "0h" },
+    { title: "SkyBlock Level", value: profile.level || 0 },
+    { title: "Combat Kills", value: profile.kills || 0 }
+  ];
 
-    const memberData = Object.values(profileData.members || {})[0] || {};
+  stats.forEach(s => {
+    const box = document.createElement("div");
+    box.className = "stat-box";
+    box.innerHTML = `<strong>${s.title}</strong><br>${s.value}`;
+    statsGrid.appendChild(box);
+  });
 
-    container.innerHTML = `
-      <div class="profile-grid">
-        <div class="stat-card"><h4>Playtime</h4>
-          <p>Total: ${formatTime(profileData.playtimes?.total || 0)}</p>
-          <p>SkyBlock: ${formatTime(profileData.playtimes?.SKYBLOCK || 0)}</p>
-          <p>Hub: ${formatTime(profileData.playtimes?.HUB || 0)}</p>
-        </div>
-
-        <div class="stat-card"><h4>Slayer & Combat</h4>
-          <p>Slayer Kills: ${memberData.slayerData?.killedSlayer || 0}</p>
-          <p>Max Damage: ${memberData.maxDamage || 0}</p>
-          <p>Max Crit: ${memberData.maxCritDamage || 0}</p>
-        </div>
-
-        <div class="stat-card"><h4>Coins & Skills</h4>
-          <p>Coin Purse: ${memberData.coinPurse || 0}</p>
-          <p>Level: ${memberData.level || 0}</p>
-          <p>Exp: ${memberData.exp || 0}</p>
-          <p>Unique Pets: ${memberData.uniquePets?.length || 0}</p>
-        </div>
-      </div>
-    `;
-  } catch (e) {
-    console.error(e);
-    container.innerHTML = "Failed to load profile.";
-  }
+  document.getElementById("stats-section").classList.remove("hidden");
 }
 
-// ---- HELPERS ----
-function formatTime(seconds) {
-  const h = Math.floor(seconds / 3600);
-  const d = Math.floor(h / 24);
-  return `${d}d ${h % 24}h`;
+function viewRawJson() {
+  const win = window.open();
+  win.document.write(`<pre>${JSON.stringify(currentPlayerData, null, 2)}</pre>`);
+}
+
+function searchMyData() {
+  document.getElementById("username").value = "C4PPM";
+  search("C4PPM");
 }
