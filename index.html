@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>SkyCrafter Search</title>
+  <style>
+    body { font-family: Arial; background-color: #1b1b1b; color: #f0f0f0; padding: 20px; max-width: 600px; margin: auto; }
+    input, button { padding: 10px; font-size: 16px; margin-right: 5px; }
+    button { cursor: pointer; }
+    pre { background-color: #2b2b2b; padding: 15px; overflow: auto; margin-top: 20px; white-space: pre-wrap; }
+  </style>
+</head>
+<body>
+  <h1>SkyCrafter Search</h1>
+  <input id="username" placeholder="Enter username" />
+  <button onclick="search()">Search</button>
+  <pre id="output">Enter a username and click Search to see results.</pre>
+
+  <script>
+    async function search() {
+      const username = document.getElementById("username").value.trim();
+      const output = document.getElementById("output");
+
+      if (!username) {
+        output.textContent = "Please enter a username!";
+        return;
+      }
+
+      output.textContent = "Loading...";
+
+      try {
+        const res = await fetch(
+          "https://skycrafter.finbob512.workers.dev/?username=" + encodeURIComponent(username)
+        );
+
+        if (!res.ok) {
+          output.textContent = "Error fetching data: " + res.status;
+          return;
+        }
+
+        const data = await res.json();
+        output.textContent = JSON.stringify(data, null, 2);
+      } catch (err) {
+        output.textContent = "Error: " + err.message;
+      }
+    }
+  </script>
+</body>
+</html>
