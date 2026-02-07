@@ -11,36 +11,27 @@
 
   <!-- Header -->
   <header>
-    <div class="header-content">
-      <h1>SkyCrafter</h1>
-      <p>Your CraftersMC player statistic tracker</p>
-    </div>
+    <h1>SkyCrafter</h1>
+    <p>Your CraftersMC player statistic tracker</p>
   </header>
 
-  <!-- Main Container -->
-  <div class="main-container">
+  <main class="main-container">
 
-    <!-- Search Section -->
+    <!-- Search -->
     <div class="search-section">
       <input id="username" placeholder="Enter username">
       <button onclick="search()">Search</button>
       <button id="view-json" style="display:none;">View RAW JSON</button>
     </div>
 
-    <!-- Top Grid: Player + Profiles -->
-    <div class="top-grid">
-
-      <!-- Player Info -->
+    <!-- Player Info -->
+    <div id="player-container" class="hidden">
       <div class="player-header" id="player-data">
         <img id="player-skin" src="" alt="Skin Head" />
         <h2 id="player-name">Player Name</h2>
         <p class="small-text" id="player-uuid">UUIDHere</p>
 
-        <div class="rank-plate">
-          <span id="player-rank">DEFAULT</span>
-        </div>
-
-        <!-- Pixel ID outside rank plate -->
+        <div class="rank-plate" id="player-rank">DEFAULT</div>
         <p class="pixelid-text" id="player-pixel">PIXELIDHere</p>
 
         <p class="secondary-info">Network XP: <span id="network-xp">0</span></p>
@@ -49,63 +40,19 @@
 
       <!-- SkyBlock Profiles -->
       <div class="profiles-section">
-        <h3>SkyBlock Profiles (<span id="profiles-count">0</span> profiles)</h3>
+        <h3>SkyBlock Profiles (<span id="profiles-count">0</span>)</h3>
         <div id="profile-tabs" class="profile-buttons"></div>
         <div id="profile-content" class="profile-content"></div>
       </div>
+    </div>
 
-    </div> <!-- End top-grid -->
+    <!-- Stats -->
+    <div class="stats-grid" id="stats-grid">
+      <!-- Populated dynamically -->
+    </div>
 
-    <!-- Stats Grid -->
-    <div class="stats-grid">
+  </main>
 
-      <!-- Playtime -->
-      <div class="stat-card">
-        <h4>⏱️ Playtime</h4>
-        <p>Total: <span id="playtime-total">0d 0h</span></p>
-        <p>SkyBlock: <span id="playtime-skyblock">0d 0h</span></p>
-        <p>Hub: <span id="playtime-hub">0d 0h</span></p>
-        <p>Limbo: <span id="playtime-limbo">0d 0h</span></p>
-      </div>
-
-      <!-- Login Info -->
-      <div class="stat-card">
-        <h4>📅 Login Info</h4>
-        <p>First Login: <span id="first-login">N/A</span></p>
-        <p>Last Login: <span id="last-login">N/A</span></p>
-        <p>Last Server: <span id="last-server">N/A</span></p>
-      </div>
-
-      <!-- SkyBlock Level -->
-      <div class="stat-card">
-        <h4>⭐ SkyBlock Level</h4>
-        <p>Level: <span id="sb-level">0</span></p>
-        <p>Experience: <span id="sb-exp">0</span></p>
-      </div>
-
-      <!-- Combat Stats -->
-      <div class="stat-card">
-        <h4>⚔️ Combat Stats</h4>
-        <p>Total Kills: <span id="combat-kills">0</span></p>
-        <p>Total Deaths: <span id="combat-deaths">0</span></p>
-        <p>Max Damage: <span id="combat-max-dmg">0</span></p>
-        <p>Max Crit: <span id="combat-max-crit">0</span></p>
-      </div>
-
-      <!-- Account Info -->
-      <div class="stat-card">
-        <h4>👤 Account Info</h4>
-        <p>Language: <span id="account-lang">N/A</span></p>
-        <p>Chat in Hubs: <span id="account-chat">ALL</span></p>
-        <p>Friend Requests: <span id="account-friends">ALL</span></p>
-        <p>Private Messages: <span id="account-pms">ALL</span></p>
-      </div>
-
-    </div> <!-- End Stats Grid -->
-
-  </div> <!-- End Main Container -->
-
-  <!-- Footer -->
   <footer>
     Powered by <a href="https://craftersmc.net" target="_blank">CraftersMC API</a> | Made by <a href="#" id="link-c4ppm">C4PPM</a>
   </footer>
