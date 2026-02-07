@@ -150,3 +150,82 @@ function fmt(s) {
   const d = Math.floor(h/24);
   return `${d}d ${h%24}h`;
 }
+
+//Bazaar
+function renderPage(data) {
+  document.getElementById("content").innerHTML = `
+    <div class="grid">
+      ${renderPlayerCard(data)}
+      ${renderNetworkCard(data)}
+      ${renderProfilesCard(data)}
+      ${renderCosmeticsCard(data)}
+      ${renderCakesCard(data)}
+      ${renderPlaytimeCard(data)}
+      ${renderMusicCard(data)}
+      ${renderServerStatusCard()}  <!-- NEW -->
+      ${renderBazaarSection()}     <!-- NEW -->
+    </div>
+  `;
+
+  // Load Bazaar & Server Status asynchronously
+  fetchServerStatus();
+  fetchBazaarItems();
+  createProfileTabs(data);
+}
+
+//server status
+// Placeholder card
+function renderServerStatusCard() {
+  return `
+    <div class="card" id="server-status-card">
+      <h2>Server Status</h2>
+      <div class="small" id="server-status">Loading...</div>
+      <div class="small" id="online-players"></div>
+    </div>
+  `;
+}
+
+// Fetch server status from Worker API
+async function fetchServerStatus() {
+  try {
+    const res = await fetch(workerURL + "/v1/network/status");
+    const status = await res.json();
+    const card = document.getElementById("server-status-card");
+    if (!card) return;
+
+    card.querySelector("#server-status").textContent = `Status: ${status.online ? "🟢 Online" : "🔴 Offline"}`;
+    card.querySelector("#online-players").textContent = `Players Online: ${status.players ?? "N/A"}`;
+  } catch (e) {
+    console.error(e);
+  }
+}
+
+// Placeholder card
+function renderBazaarSection() {
+  return `
+    <div class="card" id="bazaar-card">
+      <h2>Bazaar</h2>
+      <div id="bazaar-items">Loading items...</div>
+    </div>
+  `;
+}
+
+// Fetch all Bazaar items
+async function fetchBazaarItems() {
+  try {
+    const res = await fetch(workerURL + "/v1/resources/skyblock/bazaar/items");
+    const items = await res.json();
+
+    const container = document.getElementById("bazaar-items");
+    if (!container) return;
+
+    // Show first 10 items as an example
+    container.innerHTML = items.slice(0,10).map(item => `
+      <div class="small">
+        <strong>${item.name}</strong> - Price: ${item.price ?? "N/A"}
+      </div>
+    `).join("");
+  } catch (e) {
+    console.error(e);
+  }
+}
