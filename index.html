@@ -25,18 +25,24 @@
     </div>
 
     <!-- Player Info -->
-    <div id="player-container" class="hidden">
-      <div class="player-header" id="player-data">
-        <img id="player-skin" src="" alt="Skin Head" />
-        <h2 id="player-name">Player Name</h2>
-        <p class="small-text" id="player-uuid">UUIDHere</p>
-
-        <div class="rank-plate" id="player-rank">DEFAULT</div>
-        <p class="pixelid-text" id="player-pixel">PIXELIDHere</p>
-
-        <p class="secondary-info">Network XP: <span id="network-xp">0</span></p>
-        <p class="secondary-info">Network Coins: <span id="network-coins">0</span></p>
+<div id="player-container" class="hidden">
+  <div id="player-left">
+    <img id="player-skin" src="" alt="Skin Head">
+    <div id="player-info">
+      <h2 id="player-name">Username</h2>
+      <div id="player-uuid">UUID</div>
+      <div id="player-rank-container">
+        <div id="player-rank">RANK</div>
+        <div id="player-pixel">Pixel ID: XXXXX</div>
       </div>
+    </div>
+  </div>
+  <div id="player-right">
+    <div>Network XP: <span id="network-xp"></span></div>
+    <div>Network Coins: <span id="network-coins"></span></div>
+  </div>
+</div>
+
 
       <!-- SkyBlock Profiles -->
       <div class="profiles-section">
